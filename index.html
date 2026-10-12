@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrenador EvAU — Formulación Inorgánica IUPAC</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdfa',
+                            100: '#ccfbf1',
+                            500: '#14b8a6',
+                            600: '#0d9488',
+                            700: '#0f766e',
+                            800: '#115e59',
+                            900: '#134e4a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col justify-between selection:bg-brand-500 selection:text-white">
+
+    <header class="bg-gradient-to-r from-brand-900 via-brand-800 to-brand-700 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-brand-500 text-white p-2.5 rounded-xl shadow-inner flex items-center justify-center">
+                    <i class="fa-solid fa-atom text-xl animate-pulse"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg tracking-wide">QuímicaLab EvAU</h1>
+                    <p class="text-xs text-brand-100 opacity-90">Formulación Inorgánica IUPAC (1º Bachillerato)</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2 mt-2 sm:mt-0">
+                <button onclick="switchTab('trainer')" id="btn-tab-trainer" class="px-3 py-1.5 rounded-lg text-sm font-medium transition bg-brand-600 shadow-sm text-white">
+                    <i class="fa-solid fa-dumbbell mr-1.5"></i> Entrenador
+                </button>
+                <button onclick="switchTab('exam')" id="btn-tab-exam" class="px-3 py-1.5 rounded-lg text-sm font-medium transition bg-brand-800/60 hover:bg-brand-800 text-brand-100">
+                    <i class="fa-solid fa-file-pen mr-1.5"></i> Test EvAU (10)
+                </button>
+                <button onclick="switchTab('rules')" id="btn-tab-rules" class="px-3 py-1.5 rounded-lg text-sm font-medium transition bg-brand-800/60 hover:bg-brand-800 text-brand-100">
+                    <i class="fa-solid fa-book mr-1.5"></i> Reglas IUPAC
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl w-full mx-auto px-4 py-6 flex-grow">
+
+        <!-- VISTA 1: ENTRENADOR LIBRE -->
+        <div id="view-trainer" class="space-y-6">
+            <!-- Panel de Control / Filtros -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h2 class="text-base font-bold text-slate-800 flex items-center">
+                            <i class="fa-solid fa-sliders text-brand-600 mr-2"></i> Selecciona las categorías a practicar
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-0.5">Elige uno o varios tipos de compuestos para tus ejercicios aleatorios.</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs font-semibold px-2.5 py-1 bg-brand-50 text-brand-700 rounded-full border border-brand-100" id="trainer-streak">
+                            <i class="fa-solid fa-fire text-amber-500 mr-1"></i> Racha: <strong id="streak-count">0</strong>
+                        </span>
+                        <span class="text-xs font-semibold px-2.5 py-1 bg-slate-100 text-slate-700 rounded-full">
+                            Aciertos: <strong id="trainer-score">0</strong>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 mt-4">
+                    <label class="flex items-center space-x-2 p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-brand-50/50 cursor-pointer transition text-xs font-medium">
+                        <input type="checkbox" name="cat" value="oxides" checked class="rounded text-brand-600 focus:ring-brand-500">
+                        <span>Óxidos (y Halógenos)</span>
+                    </label>
+                    <label class="flex items-center space-x-2 p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-brand-50/50 cursor-pointer transition text-xs font-medium">
+                        <input type="checkbox" name="cat" value="metal_hydrides" checked class="rounded text-brand-600 focus:ring-brand-500">
+                        <span>Hidruros Metálicos</span>
+                    </label>
+                    <label class="flex items-center space-x-2 p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-brand-50/50 cursor-pointer transition text-xs font-medium">
+                        <input type="checkbox" name="cat" value="nonmetal_hydrides" checked class="rounded text-brand-600 focus:ring-brand-500">
+                        <span>Hidruros No Metales</span>
+                    </label>
+                    <label class="flex items-center space-x-2 p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-brand-50/50 cursor-pointer transition text-xs font-medium">
+                        <input type="checkbox" name="cat" value="hydroxides" checked class="rounded text-brand-600 focus:ring-brand-500">
+                        <span>Hidróxidos</span>
+                    </label>
+                    <label class="flex items-center space-x-2 p-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-brand-50/50 cursor-pointer transition text-xs font-medium">
+                        <input type="checkbox" name="cat" value="binary_salts" checked class="rounded text-brand-600 focus:ring-brand-500">
+                        <span>Sales Binarias</span>
+                    </label>
+                </div>
+                <div class="mt-3 flex justify-end">
+                    <button onclick="generateNewExercise()" class="bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold py-2 px-4 transition shadow-sm flex items-center space-x-1">
+                        <i class="fa-solid fa-rotate"></i> <span>Nuevo Ejercicio Aleatorio</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="exercise-card" class="bg-white rounded-3xl shadow-md border border-slate-200 p-6 md:p-8 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-brand-50 rounded-bl-full -z-0 opacity-50 pointer-events-none"></div>
+
+                <div class="relative z-10">
+                    <div class="flex justify-between items-center mb-4">
+                        <span id="badge-category" class="px-3 py-1 bg-brand-100 text-brand-800 text-xs font-bold rounded-full uppercase tracking-wider">
+                            Categoría
+                        </span>
+                        <button onclick="toggleHelpModal()" class="text-xs text-brand-700 hover:text-brand-900 font-semibold flex items-center bg-brand-50 hover:bg-brand-100 px-3 py-1.5 rounded-lg transition">
+                            <i class="fa-solid fa-circle-question mr-1.5"></i> Ver Regla IUPAC
+                        </button>
+                    </div>
+
+                    <div class="my-6 text-center">
+                        <p class="text-xs uppercase tracking-widest text-slate-400 font-semibold mb-2" id="prompt-instruction">Indica la nomenclatura correcta</p>
+                        <div id="exercise-target" class="text-3xl md:text-4xl font-extrabold text-slate-800 tracking-wide bg-slate-50 py-6 px-4 rounded-2xl border border-slate-200 inline-block min-w-[260px] shadow-inner">
+                            Cargando...
+                        </div>
+                    </div>
+
+                    <!-- Input de respuesta del usuario -->
+                    <div class="max-w-xl mx-auto space-y-4">
+                        <div id="input-container" class="relative">
+                            <input type="text" id="user-answer" placeholder="Escribe aquí tu respuesta (ej. monóxido de carbono, óxido de hierro(II)...)" class="w-full bg-slate-50 border border-slate-300 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 rounded-xl px-4 py-3.5 text-sm outline-none transition text-slate-800 font-medium">
+                            <button onclick="checkAnswer()" class="absolute right-2 top-2 bottom-2 bg-brand-600 hover:bg-brand-700 text-white px-5 rounded-lg text-sm font-bold transition shadow-sm flex items-center">
+                                Comprobar <i class="fa-solid fa-arrow-right ml-1.5"></i>
+                            </button>
+                        </div>
+                        <div class="flex justify-between text-xs text-slate-400 px-1">
+                            <span>💡 Presiona Enter para comprobar</span>
+                            <span>Adición, Stock o Tradicional</span>
+                        </div>
+                    </div>
+
+                    <!-- Feedback de corrección -->
+                    <div id="feedback-box" class="mt-6 hidden rounded-2xl p-5 border transition-all">
+                        <div class="flex items-start space-x-3">
+                            <div id="feedback-icon" class="text-2xl mt-0.5"></div>
+                            <div class="flex-grow">
+                                <h3 id="feedback-title" class="font-bold text-base"></h3>
+                                <p id="feedback-text" class="text-sm mt-1 text-slate-600 leading-relaxed"></p>
+                                <div id="feedback-details" class="mt-3 text-xs bg-white/80 p-3 rounded-xl border border-slate-200 space-y-1"></div>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex justify-end">
+                            <button onclick="generateNewExercise()" class="bg-slate-800 hover:bg-slate-900 text-white px-5 py-2 rounded-xl text-xs font-bold transition shadow-sm">
+                                Siguiente Ejercicio <i class="fa-solid fa-forward ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISTA 2: EXAMEN / TEST EVAU (10 PREGUNTAS) -->
+        <div id="view-exam" class="hidden space-y-6">
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8">
+                <div id="exam-intro" class="text-center max-w-xl mx-auto py-8 space-y-4">
+                    <div class="w-16 h-16 bg-brand-100 text-brand-700 rounded-2xl flex items-center justify-center mx-auto text-2xl shadow-inner">
+                        <i class="fa-solid fa-file-shield"></i>
+                    </div>
+                    <h2 class="text-xl font-bold text-slate-800">Simulacro de Examen EvAU (10 Preguntas)</h2>
+                    <p class="text-sm text-slate-600">Pon a prueba tus conocimientos con óxidos de halógenos (oxígeno primero), hidruros tradicionales, hidróxidos y sales. Al finalizar obtendrás la corrección detallada paso a paso.</p>
+                    <button onclick="startExam()" class="bg-brand-600 hover:bg-brand-700 text-white font-bold px-8 py-3 rounded-xl shadow-md transition text-sm">
+                        <i class="fa-solid fa-play mr-2"></i> Comenzar Examen EvAU
+                    </button>
+                </div>
+
+                <div id="exam-container" class="hidden space-y-6">
+                    <div class="flex justify-between items-center border-b border-slate-200 pb-4">
+                        <span class="text-xs font-bold text-brand-700 bg-brand-50 px-3 py-1 rounded-full border border-brand-100" id="exam-progress">Pregunta 1 de 10</span>
+                        <span class="text-xs font-semibold text-slate-500" id="exam-timer"><i class="fa-regular fa-clock mr-1"></i> <span id="timer-display">00:00</span></span>
+                    </div>
+
+                    <div class="text-center my-6">
+                        <p class="text-xs uppercase tracking-widest text-slate-400 font-semibold mb-2" id="exam-prompt">Formule o nombre el siguiente compuesto:</p>
+                        <div id="exam-target" class="text-3xl font-extrabold text-slate-800 bg-slate-50 py-6 px-4 rounded-2xl border border-slate-200 inline-block min-w-[260px] shadow-inner"></div>
+                    </div>
+
+                    <div class="max-w-xl mx-auto space-y-4">
+                        <div class="relative">
+                            <input type="text" id="exam-answer" placeholder="Escribe tu respuesta exacta..." class="w-full bg-slate-50 border border-slate-300 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 rounded-xl px-4 py-3.5 text-sm outline-none transition text-slate-800 font-medium">
+                            <button onclick="submitExamAnswer()" class="absolute right-2 top-2 bottom-2 bg-brand-600 hover:bg-brand-700 text-white px-5 rounded-lg text-sm font-bold transition shadow-sm">
+                                Siguiente <i class="fa-solid fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="exam-results" class="hidden space-y-6">
+                    <div class="text-center py-6 space-y-3">
+                        <div class="w-20 h-20 bg-amber-100 text-amber-700 rounded-3xl flex items-center justify-center mx-auto text-3xl shadow-inner">
+                            <i class="fa-solid fa-award"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-slate-800">¡Simulacro Finalizado!</h2>
+                        <div class="inline-block bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 shadow-sm mt-2">
+                            <div class="text-4xl font-extrabold text-brand-700" id="exam-final-score">0 / 10</div>
+                            <p class="text-xs text-slate-500 mt-1" id="exam-feedback-msg">¡Buen trabajo!</p>
+                        </div>
+                    </div>
+
+                    <!-- Sección de Respuestas Comentadas -->
+                    <div class="space-y-4 pt-4 border-t border-slate-200">
+                        <h3 class="font-bold text-slate-800 text-base flex items-center">
+                            <i class="fa-solid fa-clipboard-check text-brand-600 mr-2"></i> Corrección y Explicación Paso a Paso (EvAU)
+                        </h3>
+                        <div id="exam-review-list" class="space-y-3">
+                            <!-- Inyectado dinámicamente -->
+                        </div>
+                    </div>
+
+                    <div class="flex justify-center space-x-3 pt-4">
+                        <button onclick="startExam()" class="bg-brand-600 hover:bg-brand-700 text-white font-bold px-6 py-2.5 rounded-xl shadow-sm transition text-xs">
+                            <i class="fa-solid fa-rotate mr-1.5"></i> Repetir Test
+                        </button>
+                        <button onclick="switchTab('trainer')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-6 py-2.5 rounded-xl transition text-xs">
+                            Volver al Entrenador
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISTA 3: REGLAS IUPAC EVAU -->
+        <div id="view-rules" class="hidden space-y-6">
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 md:p-8 space-y-6">
+                <div class="border-b border-slate-200 pb-4">
+                    <h2 class="text-lg font-bold text-slate-800 flex items-center">
+                        <i class="fa-solid fa-book-bookmark text-brand-600 mr-2"></i> Guía Rápida IUPAC &amp; EvAU (1º Bachillerato)
+                    </h2>
+                    <p class="text-xs text-slate-500 mt-1">Criterios oficiales vigentes para la formulación y nomenclatura inorgánica.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs leading-relaxed text-slate-600">
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-3">
+                        <h3 class="font-bold text-brand-800 text-sm flex items-center">
+                            <i class="fa-solid fa-circle-dot mr-2 text-brand-600"></i> 1. Óxidos (Regla General y Halógenos)
+                        </h3>
+                        <p><strong>General:</strong> Se nombran por adición (prefijos numerales: <em>monóxido, dióxido...</em>) y sistemática con Stock (número de oxidación en romanos entre paréntesis: <em>óxido de hierro(II)</em>).</p>
+                        <p class="bg-amber-50 border border-amber-200 p-2.5 rounded-xl text-amber-900">
+                            <strong>⚠️ Excepción Halógenos (Formulación):</strong> Los óxidos formados por halógenos se escriben colocando <strong>el oxígeno primero y el halógeno después</strong> (ej. <span class="font-mono font-bold">O<sub>7</sub>Cl<sub>2</sub></span>), nombrándose al revés mediante adición: <em>heptaóxido de dicloro</em> (o sistemática invertida).
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-3">
+                        <h3 class="font-bold text-brand-800 text-sm flex items-center">
+                            <i class="fa-solid fa-circle-dot mr-2 text-brand-600"></i> 2. Hidruros Metálicos y de No Metales
+                        </h3>
+                        <p><strong>Metálicos (<span class="font-mono">MH<sub>n</sub></span>):</strong> Combinaciones con H<sup>-1</sup>. Se nombran por adición (<em>dihidruro de calcio</em>) o Stock (<em>hidruro de calcio(II)</em>).</p>
+                        <p><strong>No Metales (Grupos 13 a 17):</strong> Se permite adición (<em>trihidruro de nitrógeno</em>), pero es obligatorio conocer y usar la <strong>nomenclatura tradicional</strong> exigida en EvAU para casos especiales como <span class="font-mono">NH<sub>3</sub></span> (amoníaco), <span class="font-mono">CH<sub>4</sub></span> (metano) o los ácidos hidrácidos (<span class="font-mono">H<sub>2</sub>S</span> ➔ ácido sulfhídrico).</p>
+                    </div>
+
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-3">
+                        <h3 class="font-bold text-brand-800 text-sm flex items-center">
+                            <i class="fa-solid fa-circle-dot mr-2 text-brand-600"></i> 3. Hidróxidos y Peróxidos
+                        </h3>
+                        <p><strong>Hidróxidos:</strong> Presencia del grupo hidróxido (<span class="font-mono">OH<sup>-</sup></span>). Se emplea la nomenclatura de adición con prefijos (<em>trihidróxido de hierro</em>) y Stock (<em>hidróxido de hierro(III)</em>).</p>
+                        <p><strong>Peróxidos:</strong> Contienen el anión peróxido <span class="font-mono">[O<sub>2</sub>]<sup>2-</sup></span>. Se formulan manteniendo la estructura <span class="font-mono">O<sub>2</sub></span> y se nombran como <em>dióxido de...</em> (adición) o <em>peróxido de...</em> (Stock).</p>
+                    </div>
+
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-3">
+                        <h3 class="font-bold text-brand-800 text-sm flex items-center">
+                            <i class="fa-solid fa-circle-dot mr-2 text-brand-600"></i> 4. Sales Binarias
+                        </h3>
+                        <p><strong>Sales Binarias:</strong> Combinación de un metal y un no metal sin oxígeno (<span class="font-mono">AB</span>). El no metal termina en <em>-uro</em>. Se nombran con prefijos de adición (<em>dicloruro de hierro</em>) y sistemática Stock con números romanos (<em>cloruro de hierro(II)</em>).</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal de Regla IUPAC -->
+    <div id="rule-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4 animate-in fade-in zoom-in duration-200">
+            <div class="flex justify-between items-center border-b border-slate-200 pb-3">
+                <h3 class="font-bold text-slate-800 text-sm flex items-center">
+                    <i class="fa-solid fa-lightbulb text-amber-500 mr-2"></i> Ayuda IUPAC para este compuesto
+                </h3>
+                <button onclick="toggleHelpModal()" class="text-slate-400 hover:text-slate-600 text-sm p-1">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="modal-rule-content" class="text-xs text-slate-600 leading-relaxed space-y-2">
+                <!-- Contenido dinámico -->
+            </div>
+            <div class="flex justify-end pt-2">
+                <button onclick="toggleHelpModal()" class="bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold px-4 py-2 rounded-xl transition">
+                    Entendido
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-white border-t border-slate-200 py-4 mt-8 text-center text-xs text-slate-500">
+        <p>QuímicaLab 1º Bachillerato — Preparación Pruebas EvAU. Criterios actualizados IUPAC.</p>
+    </footer>
+
+    <script>
+        // Banco de Datos Inteligente con Óxidos de Halógenos (Oxígeno primero: O7Cl2, OBr2, etc.)
+        const compoundDatabase = [
+            // Óxidos metálicos y no metálicos normales
+            { cat: 'oxides', formula: 'FeO', addition: 'monóxido de hierro', stock: 'óxido de hierro(II)', type: 'name', rule: 'Óxido metálico. Se nombra por adición (monóxido de hierro) o Stock con número de oxidación romano (óxido de hierro(II)).' },
+            { cat: 'oxides', formula: 'Fe2O3', addition: 'trióxido de dihierro', stock: 'óxido de hierro(III)', type: 'name', rule: 'Óxido metálico con hierro trivalente. Adición: trióxido de dihierro. Stock: óxido de hierro(III).' },
+            { cat: 'oxides', formula: 'SO2', addition: 'dióxido de azufre', stock: 'óxido de azufre(IV)', type: 'name', rule: 'Óxido no metálico. Adición: dióxido de azufre. Stock: óxido de azufre(IV).' },
+            { cat: 'oxides', formula: 'SO3', addition: 'trióxido de azufre', stock: 'óxido de azufre(VI)', type: 'name', rule: 'Óxido no metálico. Adición: trióxido de azufre. Stock: óxido de azufre(VI).' },
+            { cat: 'oxides', formula: 'CO', addition: 'monóxido de carbono', stock: 'óxido de carbono(II)', type: 'name', rule: 'Óxido de carbono. Adición: monóxido de carbono.' },
+            { cat: 'oxides', formula: 'CO2', addition: 'dióxido de carbono', stock: 'óxido de carbono(IV)', type: 'name', rule: 'Dióxido de carbono (adición) u óxido de carbono(IV).' },
+            // Óxidos de halógenos (Excepción EvAU: Oxígeno primero, se nombran al revés)
+            { cat: 'oxides', formula: 'O7Cl2', addition: 'heptaóxido de dicloro', stock: 'óxido de cloro(VII)', type: 'name', rule: '⚠️ Excepción de halógenos: Se escribe primero el oxígeno y luego el halógeno (O7Cl2), nombrándose al revés por adición: heptaóxido de dicloro.' },
+            { cat: 'oxides', formula: 'OBr2', addition: 'monóxido de dibromo', stock: 'óxido de bromo(I)', type: 'name', rule: '⚠️ Excepción de halógenos: Oxígeno primero (OBr2). Adición invertida: monóxido de dibromo.' },
+            { cat: 'oxides', formula: 'O5I2', addition: 'pentaóxido de diyodo', stock: 'óxido de yodo(V)', type: 'name', rule: '⚠️ Excepción de halógenos: Oxígeno primero (O5I2). Adición invertida: pentaóxido de diyodo.' },
+
+            // Hidruros Metálicos
+            { cat: 'metal_hydrides', formula: 'CaH2', addition: 'dihidruro de calcio', stock: 'hidruro de calcio(II)', type: 'name', rule: 'Hidruro metálico. Adición: dihidruro de calcio. Stock: hidruro de calcio(II).' },
+            { cat: 'metal_hydrides', formula: 'NaH', addition: 'hidruro de sodio', stock: 'hidruro de sodio(I)', type: 'name', rule: 'Hidruro de sodio por adición o hidruro de sodio(I).' },
+            { cat: 'metal_hydrides', formula: 'FeH3', addition: 'trihidruro de hierro', stock: 'hidruro de hierro(III)', type: 'name', rule: 'Hidruro metálico con hierro(III). Adición: trihidruro de hierro.' },
+
+            // Hidruros No Metálicos (Nomenclatura Tradicional obligatoria EvAU)
+            { cat: 'nonmetal_hydrides', formula: 'NH3', addition: 'trihidruro de nitrógeno', stock: 'amoníaco', traditional: 'amoníaco', type: 'name', rule: 'Hidruro no metálico especial. Su nombre tradicional IUPAC aceptado y exigido en EvAU es Amoníaco.' },
+            { cat: 'nonmetal_hydrides', formula: 'CH4', addition: 'tetrahidruro de carbono', stock: 'metano', traditional: 'metano', type: 'name', rule: 'Hidruro de carbono conocido tradicionalmente como Metano.' },
+            { cat: 'nonmetal_hydrides', formula: 'H2S', addition: 'dihidruro de azufre', stock: 'sulfuro de dihidrógeno', traditional: 'ácido sulfhídrico', type: 'name', rule: 'En disolución acuosa o tradicional se denomina ácido sulfhídrico (o dihidruro de azufre por adición).' },
+            { cat: 'nonmetal_hydrides', formula: 'HCl', addition: 'cloruro de hidrógeno', stock: 'cloruro de hidrógeno', traditional: 'ácido clorhídrico', type: 'name', rule: 'Halogenuro de hidrógeno / ácido clorhídrico en disolución acuosa.' },
+
+            // Hidróxidos
+            { cat: 'hydroxides', formula: 'NaOH', addition: 'hidróxido de sodio', stock: 'hidróxido de sodio(I)', type: 'name', rule: 'Hidróxido metálico. Adición: hidróxido de sodio (o monohidróxido de sodio).' },
+            { cat: 'hydroxides', formula: 'Fe(OH)3', addition: 'trihidróxido de hierro', stock: 'hidróxido de hierro(III)', type: 'name', rule: 'Hidróxido con hierro trivalente. Adición: trihidróxido de hierro. Stock: hidróxido de hierro(III).' },
+            { cat: 'hydroxides', formula: 'Mg(OH)2', addition: 'dihidróxido de magnesio', stock: 'hidróxido de magnesio(II)', type: 'name', rule: 'Hidróxido de magnesio. Adición: dihidróxido de magnesio.' },
+
+            // Sales Binarias
+            { cat: 'binary_salts', formula: 'NaCl', addition: 'cloruro de sodio', stock: 'cloruro de sodio(I)', type: 'name', rule: 'Sal binaria. Metal con no metal terminado en -uro. Cloruro de sodio.' },
+            { cat: 'binary_salts', formula: 'CaF2', addition: 'difluoruro de calcio', stock: 'fluoruro de calcio(II)', type: 'name', rule: 'Sal binaria. Difluoruro de calcio por adición.' },
+            { cat: 'binary_salts', formula: 'FeBr3', addition: 'tribromuro de hierro', stock: 'bromuro de hierro(III)', type: 'name', rule: 'Sal binaria con hierro(III). Tribromuro de hierro o bromuro de hierro(III).' },
+            { cat: 'binary_salts', formula: 'CuS', addition: 'sulfuro de cobre', stock: 'sulfuro de cobre(II)', type: 'name', rule: 'Sulfuro de cobre(II) o monosulfuro de cobre.' }
+        ];
+
+        let currentExercise = null;
+        let streak = 0;
+        let trainerScore = 0;
+        let examQuestions = [];
+        let examIndex = 0;
+        let examUserAnswers = [];
+        let examTimerInterval = null;
+        let examSeconds = 0;
+
+        // Cambiar entre pestañas
+        function switchTab(tabId) {
+            ['trainer', 'exam', 'rules'].forEach(t => {
+                document.getElementById(`view-${t}`).classList.add('hidden');
+                document.getElementById(`btn-tab-${t}`).className = 'px-3 py-1.5 rounded-lg text-sm font-medium transition bg-brand-800/60 hover:bg-brand-800 text-brand-100';
+            });
+            document.getElementById(`view-${tabId}`).classList.remove('hidden');
+            document.getElementById(`btn-tab-${tabId}`).className = 'px-3 py-1.5 rounded-lg text-sm font-medium transition bg-brand-600 shadow-sm text-white';
+
+            if (tabId === 'trainer') {
+                generateNewExercise();
+            } else if (tabId === 'exam' && examQuestions.length === 0) {
+                document.getElementById('exam-intro').classList.remove('hidden');
+                document.getElementById('exam-container').classList.add('hidden');
+                document.getElementById('exam-results').classList.add('hidden');
+            }
+        }
+
+        function getSelectedCategories() {
+            const checkboxes = document.querySelectorAll('input[name="cat"]:checked');
+            return Array.from(checkboxes).map(cb => cb.value);
+        }
+
+        function generateNewExercise() {
+            const selectedCats = getSelectedCategories();
+            if (selectedCats.length === 0) {
+                alert('Por favor, selecciona al menos una categoría de compuestos.');
+                document.querySelector('input[name="cat"]').checked = true;
+                return generateNewExercise();
+            }
+
+            const filtered = compoundDatabase.filter(c => selectedCats.includes(c.cat));
+            currentExercise = filtered[Math.floor(Math.random() * filtered.length)];
+
+            document.getElementById('feedback-box').classList.add('hidden');
+            document.getElementById('user-answer').value = '';
+            document.getElementById('user-answer').disabled = false;
+            
+            document.getElementById('exercise-target').innerHTML = formatFormula(currentExercise.formula);
+            
+            const catNames = {
+                oxides: 'Óxidos y Halógenos',
+                metal_hydrides: 'Hidruros Metálicos',
+                nonmetal_hydrides: 'Hidruros No Metálicos',
+                hydroxides: 'Hidróxidos',
+                binary_salts: 'Sales Binarias'
+            };
+            document.getElementById('badge-category').innerText = catNames[currentExercise.cat] || 'Formulación';
+            document.getElementById('user-answer').focus();
+        }
+
+        function formatFormula(formula) {
+            return formula.replace(/([0-9]+)/g, '<sub>$1</sub>');
+        }
+
+        function normalizeText(text) {
+            return text.toLowerCase()
+                .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
+        function checkAnswer() {
+            const userRaw = document.getElementById('user-answer').value;
+            if (!userRaw.trim()) return;
+
+            const userNorm = normalizeText(userRaw);
+            const validAdd = normalizeText(currentExercise.addition);
+            const validStock = normalizeText(currentExercise.stock);
+            const validTrad = currentExercise.traditional ? normalizeText(currentExercise.traditional) : '';
+
+            const isCorrect = (userNorm === validAdd || userNorm === validStock || (validTrad && userNorm === validTrad));
+
+            const feedbackBox = document.getElementById('feedback-box');
+            const feedbackIcon = document.getElementById('feedback-icon');
+            const feedbackTitle = document.getElementById('feedback-title');
+            const feedbackText = document.getElementById('feedback-text');
+            const feedbackDetails = document.getElementById('feedback-details');
+
+            feedbackBox.classList.remove('hidden', 'bg-emerald-50', 'border-emerald-200', 'bg-rose-50', 'border-rose-200');
+
+            if (isCorrect) {
+                feedbackBox.classList.add('bg-emerald-50', 'border-emerald-200');
+                feedbackIcon.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i>';
+                feedbackTitle.innerText = '¡Respuesta Correcta!';
+                feedbackTitle.className = 'font-bold text-base text-emerald-800';
+                feedbackText.innerText = 'Has aplicado correctamente las reglas IUPAC para este compuesto.';
+                streak++;
+                trainerScore++;
+            } else {
+                feedbackBox.classList.add('bg-rose-50', 'border-rose-200');
+                feedbackIcon.innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-600"></i>';
+                feedbackTitle.innerText = 'Respuesta Incorrecta';
+                feedbackTitle.className = 'font-bold text-base text-rose-800';
+                feedbackText.innerText = `Tu respuesta: "${userRaw}" no es correcta.`;
+                streak = 0;
+            }
+
+            document.getElementById('streak-count').innerText = streak;
+            document.getElementById('trainer-score').innerText = trainerScore;
+
+            feedbackDetails.innerHTML = `
+                <div><strong>Nomenclatura de Adición:</strong> ${currentExercise.addition}</div>
+                <div><strong>Nomenclatura Stock:</strong> ${currentExercise.stock}</div>
+                ${currentExercise.traditional ? `<div><strong>Nomenclatura Tradicional:</strong> ${currentExercise.traditional}</div>` : ''}
+                <div class="pt-1 text-slate-500"><strong>Regla IUPAC:</strong> ${currentExercise.rule}</div>
+            `;
+
+            document.getElementById('user-answer').disabled = true;
+        }
+
+        function toggleHelpModal() {
+            const modal = document.getElementById('rule-modal');
+            modal.classList.toggle('hidden');
+            if (!modal.classList.contains('hidden') && currentExercise) {
+                document.getElementById('modal-rule-content').innerHTML = `
+                    <p class="font-bold text-slate-800 text-sm">Compuesto: ${currentExercise.formula}</p>
+                    <p>${currentExercise.rule}</p>
+                `;
+            }
+        }
+
+        // ==================== SIMULACRO DE EXAMEN ====================
+        function startExam() {
+            examQuestions = [...compoundDatabase].sort(() => 0.5 - Math.random()).slice(0, 10);
+            examIndex = 0;
+            examUserAnswers = [];
+            examSeconds = 0;
+
+            document.getElementById('exam-intro').classList.add('hidden');
+            document.getElementById('exam-results').classList.add('hidden');
+            document.getElementById('exam-container').classList.remove('hidden');
+
+            if (examTimerInterval) clearInterval(examTimerInterval);
+            examTimerInterval = setInterval(() => {
+                examSeconds++;
+                let m = Math.floor(examSeconds / 60).toString().padStart(2, '0');
+                let s = (examSeconds % 60).toString().padStart(2, '0');
+                document.getElementById('timer-display').innerText = `${m}:${s}`;
+            }, 1000);
+
+            loadExamQuestion();
+        }
+
+        function loadExamQuestion() {
+            if (examIndex >= examQuestions.length) {
+                finishExam();
+                return;
+            }
+            const q = examQuestions[examIndex];
+            document.getElementById('exam-progress').innerText = `Pregunta ${examIndex + 1} de 10`;
+            document.getElementById('exam-target').innerHTML = formatFormula(q.formula);
+            document.getElementById('exam-answer').value = '';
+            document.getElementById('exam-answer').focus();
+        }
+
+        function submitExamAnswer() {
+            const ans = document.getElementById('exam-answer').value;
+            const q = examQuestions[examIndex];
+            
+            examUserAnswers.push({
+                question: q,
+                userAnswer: ans.trim()
+            });
+
+            examIndex++;
+            loadExamQuestion();
+        }
+
+        function finishExam() {
+            clearInterval(examTimerInterval);
+            document.getElementById('exam-container').classList.add('hidden');
+            document.getElementById('exam-results').classList.remove('hidden');
+
+            let correctCount = 0;
+            let reviewHtml = '';
+
+            examUserAnswers.forEach((item, idx) => {
+                const q = item.question;
+                const userNorm = normalizeText(item.userAnswer);
+                const validAdd = normalizeText(q.addition);
+                const validStock = normalizeText(q.stock);
+                const validTrad = q.traditional ? normalizeText(q.traditional) : '';
+
+                const isCorrect = (userNorm === validAdd || userNorm === validStock || (validTrad && userNorm === validTrad));
+                if (isCorrect) correctCount++;
+
+                reviewHtml += `
+                    <div class="bg-slate-50 border ${isCorrect ? 'border-emerald-200 bg-emerald-50/40' : 'border-rose-200 bg-rose-50/40'} rounded-2xl p-4 text-xs space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-slate-700">Pregunta ${idx + 1}: Fórmula <span class="font-mono font-extrabold text-brand-700">${formatFormula(q.formula)}</span></span>
+                            <span class="px-2.5 py-0.5 rounded-full font-bold text-[10px] ${isCorrect ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                                ${isCorrect ? '✓ Correcta' : '✗ Incorrecta'}
+                            </span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-600">
+                            <div><strong>Tu respuesta:</strong> <span class="font-mono">${item.userAnswer || '(Sin responder)'}</span></div>
+                            <div><strong>Respuesta válida:</strong> <span class="font-mono text-brand-700">${q.addition} / ${q.stock}</span></div>
+                        </div>
+                        <div class="pt-1 border-t border-slate-200/60 text-slate-500">
+                            <strong>Explicación EvAU:</strong> ${q.rule}
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('exam-final-score').innerText = `${correctCount} / 10`;
+            document.getElementById('exam-review-list').innerHTML = reviewHtml;
+
+            let msg = '¡Excelente nivel de formulación EvAU!';
+            if (correctCount < 5) msg = 'Debes repasar las normas IUPAC y excepciones de halógenos.';
+            else if (correctCount < 8) msg = '¡Buen trabajo! Estás muy cerca del sobresaliente.';
+            document.getElementById('exam-feedback-msg').innerText = msg;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            generateNewExercise();
+
+            document.getElementById('user-answer').addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    if (document.getElementById('user-answer').disabled) {
+                        generateNewExercise();
+                    } else {
+                        checkAnswer();
+                    }
+                }
+            });
+
+            document.getElementById('exam-answer').addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    submitExamAnswer();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
